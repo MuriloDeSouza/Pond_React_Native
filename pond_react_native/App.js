@@ -1,20 +1,30 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import { ProfileImage } from './components/ProfileImage';
+import Login from './components/Login'; // Importe o componente Login
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+    <SafeAreaView style={{flex: 1}}>
       <StatusBar style="auto" />
-    </View>
+      
+      {/* Opção 1: Usar apenas o Login */}
+      <Login onLogin={(credentials) => console.log('Credenciais:', credentials)} />
+      
+      {/* Opção 2: Usar junto com o ProfileImage (se necessário) */}
+      {/* 
+      <ProfileImage image={require('./assets/ronaldinho.png')} />
+      <Login onLogin={(credentials) => console.log('Credenciais:', credentials)} />
+      */}
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+// export default function App() {
+//   return (
+//     <SafeAreaView style={{flex:1.0}}>
+//        {/* <ProfileImage image={require('./assets/ronaldinho.png')}></ProfileImage> caso queira mudar a imagem e atualizar mais rápido a umagem como variável */}
+//        <ProfileImage></ProfileImage>  
+//     </SafeAreaView>
+//   );
+// }
