@@ -10,27 +10,30 @@ import {
   Image
 } from 'react-native';
 
-const Login = ({ navigation, onLogin }) => {
+const RecuperarSenha = ({ navigation }) => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const handleLogin = () => {
-    if (!email.trim() || !password.trim()) {
-      setError('Por favor, preencha todos os campos');
+  const handleRecuperarSenha = () => {
+    // Validação simples
+    if (!email.trim()) {
+      setError('Por favor, insira seu email');
       return;
     }
-    
-    // Validação simples de email
+
     if (!/^\S+@\S+\.\S+$/.test(email)) {
-      setError('Por favor, insira um email válido');
+      setError('Email inválido');
       return;
     }
 
     setError('');
-    if (onLogin) {
-      onLogin({ email, password });
-    }
+    setSuccess('Um link de recuperação foi enviado para seu email!');
+    
+    // Simulação: depois de 3 segundos, volta para o Login
+    setTimeout(() => {
+      navigation.goBack();
+    }, 3000);
   };
 
   return (
@@ -39,17 +42,19 @@ const Login = ({ navigation, onLogin }) => {
       style={styles.container}
     >
       <View style={styles.innerContainer}>
-        {/* Logo/Header */}
+        {/* Logo (igual ao Login) */}
         <Image
-          source={require('../assets/logo.png')} // Altere para o caminho da sua logo
+          source={require('../assets/logo.png')} // Substitua pelo seu logo
           style={styles.logo}
           resizeMode="contain"
         />
         
-        <Text style={styles.title}>Bem-vindo de volta</Text>
-        <Text style={styles.subtitle}>Faça login para continuar</Text>
+        <Text style={styles.title}>Recuperar Senha</Text>
+        <Text style={styles.subtitle}>Digite seu email para receber o link de recuperação</Text>
 
+        {/* Mensagens de erro/sucesso */}
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        {success ? <Text style={styles.successText}>{success}</Text> : null}
 
         {/* Campo Email */}
         <View style={styles.inputContainer}>
@@ -62,52 +67,31 @@ const Login = ({ navigation, onLogin }) => {
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
-            autoCorrect={false}
           />
         </View>
 
-        {/* Campo Senha */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Senha</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="••••••••"
-            placeholderTextColor="#999"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-        </View>
-
-        {/* Botão Esqueci a Senha */}
+        {/* Botão Enviar */}
         <TouchableOpacity 
-            style={styles.forgotPassword} 
-            onPress={() => navigation.navigate('RecuperarSenha')}
-        >
-            <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
-        </TouchableOpacity>
-
-        {/* Botão Login */}
-        <TouchableOpacity 
-          style={styles.loginButton} 
-          onPress={handleLogin}
+          style={styles.button} 
+          onPress={handleRecuperarSenha}
           activeOpacity={0.8}
         >
-          <Text style={styles.loginButtonText}>Entrar</Text>
+          <Text style={styles.buttonText}>Enviar Link</Text>
         </TouchableOpacity>
 
-        {/* Link para Cadastro */}
-        <View style={styles.signupContainer}>
-            <Text style={styles.signupText}>Não tem uma conta?</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
-                <Text style={styles.signupLink}> Cadastre-se</Text>
-            </TouchableOpacity>
-        </View>
+        {/* Link para voltar ao Login */}
+        <TouchableOpacity 
+          style={styles.backLink} 
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.backLinkText}>Voltar ao Login</Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
 };
 
+// Estilos (reutilizados do Login com pequenas adaptações)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -156,28 +140,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E0E0E0',
   },
-  forgotPassword: {
-    alignSelf: 'flex-end',
-    marginBottom: 24,
-  },
-  forgotPasswordText: {
-    color: '#3498db',
-    fontSize: 14,
-  },
-  loginButton: {
+  button: {
     height: 50,
     backgroundColor: '#3498db',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
+    marginTop: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
-  loginButtonText: {
+  buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
@@ -187,18 +163,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
-  signupContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 16,
+  successText: {
+    color: '#2ecc71',
+    textAlign: 'center',
+    marginBottom: 16,
   },
-  signupText: {
-    color: '#666',
+  backLink: {
+    alignSelf: 'center',
+    marginTop: 20,
   },
-  signupLink: {
+  backLinkText: {
     color: '#3498db',
     fontWeight: '500',
   },
 });
 
-export default Login;
+export default RecuperarSenha;
