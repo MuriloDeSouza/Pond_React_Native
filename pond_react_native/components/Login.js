@@ -31,6 +31,9 @@ const Login = ({ navigation, onLogin }) => {
     if (onLogin) {
       onLogin({ email, password });
     }
+
+    // Navega para a tela Home após login bem-sucedido
+    navigation.navigate('Home'); // Esta é a linha importante!
   };
 
   return (
