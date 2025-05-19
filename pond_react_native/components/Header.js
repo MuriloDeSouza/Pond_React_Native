@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 const Header = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Mercado App</Text>
+      <Text style={styles.title}>Mercadinho do Murilove</Text>
       
       <TouchableOpacity onPress={() => navigation.navigate('Perfil')}>
         <Image
@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     tintColor: 'white',
+    borderRadius: 16,
   },
 });
 
