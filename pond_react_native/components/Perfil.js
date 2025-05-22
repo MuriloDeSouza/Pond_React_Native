@@ -5,8 +5,8 @@ import * as ImagePicker from 'expo-image-picker';
 const Perfil = ({ navigation }) => {
   // Dados do usuário (você pode substituir por dados reais)
   const [user, setUser] = useState({
-    name: 'João Silva',
-    email: 'joao@exemplo.com',
+    name: 'Murilo Prianti',
+    email: 'mpri@gmail.com',
     photo: require('../assets/perfil_icon.png'), // Imagem padrão
   });
 
