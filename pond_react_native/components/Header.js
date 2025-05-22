@@ -7,10 +7,9 @@ const Header = ({ navigation }) => {
       <Text style={styles.title}>Mercadinho do Murilove</Text>
       
       <TouchableOpacity onPress={() => navigation.navigate('Perfil')}>
-        <Image
-          source={require('../assets/ronaldinho.png')} // Substitua pelo seu ícone
-          style={styles.profileIcon}
-        />
+      <View style={{ flex: 0.5, justifyContent: 'center', alignItems: 'center' }}>
+            <Image source={require('../assets/ronaldinho.png')} style={{width: 50, height: 50, borderRadius: 100}}></Image>
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -31,12 +30,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
-  },
-  profileIcon: {
-    width: 32,
-    height: 32,
-    tintColor: 'white',
-    borderRadius: 16,
   },
 });
 

@@ -1,52 +1,53 @@
-import React, { useState } from 'react';
-import { View, FlatList, Image, Text, StyleSheet, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, FlatList, Image, Text, StyleSheet, SafeAreaView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import Header from './Header';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 
-const Home = ({ navigation }) => {
-  // Estado para armazenar a imagem selecionada
-  const [selectedImage, setSelectedImage] = useState(null);
+const PAGE_SIZE = 10; // Quantidade de produtos por página
 
-  //lista de produtos
-  const [products] = useState([
-    {
-      id: '1',
-      name: 'Arroz Integral',
-      price: 'R$ 8,99',
-      image: require('../assets/arroz.png'),
-    },
-    {
-      id: '2',
-      name: 'Feijão Carioca',
-      price: 'R$ 7,50',
-      image: require('../assets/feijao.png'),
-    },
-    {
-      id: '3',
-      name: 'Óleo de Soja',
-      price: 'R$ 9,80',
-      image: require('../assets/oleo.png'),
-    },
-    {
-      id: '4',
-      name: 'Açúcar Cristal',
-      price: 'R$ 5,20',
-      image: require('../assets/acucar.png'),
-    },
-    {
-      id: '5',
-      name: 'Café em Pó',
-      price: 'R$ 12,90',
-      image: require('../assets/cafe.png'),
-    },
-    {
-      id: '6',
-      name: 'Leite Integral',
-      price: 'R$ 4,75',
-      image: require('../assets/leite.png'),
-    },
-  ]);
+const Home = ({ navigation }) => {
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [totalProducts, setTotalProducts] = useState(0);
+
+  // Função para buscar produtos da API
+  const fetchProducts = async (page) => {
+    setLoading(true);
+    try {
+      const skip = page * PAGE_SIZE;
+      const response = await fetch(`https://dummyjson.com/products?limit=${PAGE_SIZE}&skip=${skip}`);
+      const data = await response.json();
+      
+      setProducts(data.products);
+      setTotalProducts(data.total);
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível carregar os produtos');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Carrega os produtos quando a página muda
+  useEffect(() => {
+    fetchProducts(currentPage);
+  }, [currentPage]);
+
+  // Funções para navegar entre páginas
+  const goToNextPage = () => {
+    if ((currentPage + 1) * PAGE_SIZE < totalProducts) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const goToPrevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   const abrirCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -93,9 +94,14 @@ const Home = ({ navigation }) => {
       style={styles.productCard}
       onPress={() => navigation.navigate('ProductDetail', { product: item })}
     >
-      <Image source={item.image} style={styles.productImage} />
-      <Text style={styles.productName}>{item.name}</Text>
-      <Text style={styles.productPrice}>{item.price}</Text>
+      <Image 
+        source={{ uri: item.thumbnail }} 
+        style={styles.productImage} 
+        defaultSource={require('../assets/logo.png')} // Imagem padrão enquanto carrega
+      />
+      <Text style={styles.productName}>{item.title}</Text>
+      <Text style={styles.productPrice}>R$ {item.price.toFixed(2)}</Text>
+      <Text style={styles.productBrand}>{item.brand}</Text>
     </TouchableOpacity>
   );
 
@@ -109,14 +115,45 @@ const Home = ({ navigation }) => {
         </View>
       )}
 
-      <FlatList
-        data={products}
-        renderItem={renderProduct}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#3498db" />
+        </View>
+      ) : (
+        <>
+          <FlatList
+            data={products}
+            renderItem={renderProduct}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={2}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+          />
+          
+          {/* Controles de paginação */}
+          <View style={styles.pagination}>
+            <TouchableOpacity 
+              style={[styles.pageButton, currentPage === 0 && styles.disabledButton]}
+              onPress={goToPrevPage}
+              disabled={currentPage === 0}
+            >
+              <Ionicons name="chevron-back" size={24} color={currentPage === 0 ? '#ccc' : '#3498db'} />
+            </TouchableOpacity>
+            
+            <Text style={styles.pageText}>
+              Página {currentPage + 1} de {Math.ceil(totalProducts / PAGE_SIZE)}
+            </Text>
+            
+            <TouchableOpacity 
+              style={[styles.pageButton, (currentPage + 1) * PAGE_SIZE >= totalProducts && styles.disabledButton]}
+              onPress={goToNextPage}
+              disabled={(currentPage + 1) * PAGE_SIZE >= totalProducts}
+            >
+              <Ionicons name="chevron-forward" size={24} color={(currentPage + 1) * PAGE_SIZE >= totalProducts ? '#ccc' : '#3498db'} />
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
       
       {/* Menu de ações da câmera */}
       <View style={styles.actionButtonsContainer}>
@@ -143,9 +180,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9f9f9',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   listContent: {
     padding: 8,
-    paddingBottom: 100, // Espaço para os botões
+    paddingBottom: 120, // Espaço para os botões
   },
   productCard: {
     flex: 1,
@@ -162,6 +204,7 @@ const styles = StyleSheet.create({
     height: 80,
     resizeMode: 'contain',
     marginBottom: 8,
+    borderRadius: 5,
   },
   productName: {
     fontSize: 14,
@@ -173,6 +216,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#2ecc71',
     fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  productBrand: {
+    fontSize: 12,
+    color: '#666',
+    fontStyle: 'italic',
   },
   imagePreviewContainer: {
     alignItems: 'center',
@@ -185,9 +234,29 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
   },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  pageButton: {
+    padding: 10,
+    marginHorizontal: 10,
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  pageText: {
+    fontSize: 16,
+    color: '#333',
+  },
   actionButtonsContainer: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 70, // Ajustado para ficar acima da paginação
     right: 20,
     flexDirection: 'column',
     alignItems: 'center',
