@@ -97,11 +97,17 @@ const Home = ({ navigation }) => {
       <Image 
         source={{ uri: item.thumbnail }} 
         style={styles.productImage} 
-        defaultSource={require('../assets/logo.png')} // Imagem padrão enquanto carrega
+        defaultSource={require('../assets/logo.png')}
       />
       <Text style={styles.productName}>{item.title}</Text>
       <Text style={styles.productPrice}>R$ {item.price.toFixed(2)}</Text>
       <Text style={styles.productBrand}>{item.brand}</Text>
+      {/* Mostra apenas os primeiros 50 caracteres da descrição com "..." */}
+      <Text style={styles.itemDescription} numberOfLines={2}>
+        {item.description.length > 50 
+          ? `${item.description.substring(0, 50)}...` 
+          : item.description}
+      </Text>
     </TouchableOpacity>
   );
 
@@ -279,6 +285,12 @@ const styles = StyleSheet.create({
   },
   galleryButton: {
     backgroundColor: '#9b59b6',
+  },
+  itemDescription: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 4,
+    textAlign: 'center',
   },
 });
 

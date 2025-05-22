@@ -7,6 +7,7 @@ import Cadastro from './components/Cadastro';
 import RecuperarSenha from './components/RecuperarSenha';
 import Home from './components/Home';
 import Perfil from './components/Perfil';
+import ProductDetail from './components/ProductDetail';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,11 @@ export default function App() {
         <Stack.Screen name="RecuperarSenha" component={RecuperarSenha} />
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Perfil" component={Perfil} />
+        <Stack.Screen 
+          name="ProductDetail" 
+          component={ProductDetail}
+          options={{ title: 'Detalhes do Produto' }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
