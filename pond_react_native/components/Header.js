@@ -8,7 +8,7 @@ const Header = ({ navigation }) => {
       
       <TouchableOpacity onPress={() => navigation.navigate('Perfil')}>
         <Image
-          source={require('../assets/perfil_icon.png')} // Substitua pelo seu ícone
+          source={require('../assets/ronaldinho.png')} // Substitua pelo seu ícone
           style={styles.profileIcon}
         />
       </TouchableOpacity>
