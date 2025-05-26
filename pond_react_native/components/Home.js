@@ -6,12 +6,13 @@ import * as ImagePicker from 'expo-image-picker';
 
 const PAGE_SIZE = 10; // Quantidade de produtos por página
 
-const Home = ({ navigation }) => {
+const Home = ({ navigation, route}) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [totalProducts, setTotalProducts] = useState(0);
+  const [showWelcome, setShowWelcome] = useState(false);
 
   // Função para buscar produtos da API
   const fetchProducts = async (page) => {
@@ -30,6 +31,30 @@ const Home = ({ navigation }) => {
       setLoading(false);
     }
   };
+
+  // Verifica se é um novo login para mostrar a mensagem de boas-vindas
+  useEffect(() => {
+    if (route.params?.newLogin) {
+      setShowWelcome(true);
+      // Esconde a mensagem após 5 segundos
+      const timer = setTimeout(() => {
+        setShowWelcome(false);
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [route.params]);
+
+  // Mostra a mensagem de boas-vindas se showWelcome for true
+  useEffect(() => {
+    if (showWelcome) {
+      Alert.alert(
+        'Bem-vindo!',
+        'Você está dentro do app, olha os novos produtos e fique atento às promoções!',
+        [{ text: 'OK', onPress: () => setShowWelcome(false) }]
+      );
+    }
+  }, [showWelcome]);  
 
   // Carrega os produtos quando a página muda
   useEffect(() => {

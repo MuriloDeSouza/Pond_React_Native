@@ -24,7 +24,11 @@ export default function App() {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Cadastro" component={Cadastro} />
         <Stack.Screen name="RecuperarSenha" component={RecuperarSenha} />
-        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Home" component={Home} options={{ 
+          headerShown: false,
+          gestureEnabled: false // Impede voltar para o Login com gesto
+          }}
+        />
         <Stack.Screen name="Perfil" component={Perfil} />
         <Stack.Screen 
           name="ProductDetail" 

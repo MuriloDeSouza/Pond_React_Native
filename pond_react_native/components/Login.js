@@ -27,13 +27,23 @@ const Login = ({ navigation, onLogin }) => {
       return;
     }
 
-    setError('');
-    if (onLogin) {
-      onLogin({ email, password });
+    // Credenciais padrão
+    const DEFAULT_EMAIL = 'mumu@gmail.com';
+    const DEFAULT_PASSWORD = '12345678';
+
+    // Verifica as credenciais
+    if (email !== DEFAULT_EMAIL || password !== DEFAULT_PASSWORD) {
+      setError('Email ou senha incorretos');
+      return;
     }
 
-    // Navega para a tela Home após login bem-sucedido
-    navigation.navigate('Home'); // Esta é a linha importante!
+    setError('');
+    
+    // Navega para Home passando um parâmetro indicando que é um novo login
+    navigation.navigate('Home', { newLogin: true });
+
+    // // Navega para a tela Home após login bem-sucedido
+    // navigation.navigate('Home'); // Esta é a linha importante!
   };
 
   return (
