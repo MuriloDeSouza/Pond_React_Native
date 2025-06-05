@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Perfil = ({ navigation }) => {
   // Dados do usuário e estado de edição
@@ -13,6 +14,33 @@ const Perfil = ({ navigation }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempUser, setTempUser] = useState({...user});
 
+  // Carrega os dados do usuário ao iniciar o componente
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const savedUser = await AsyncStorage.getItem('@userData');
+        if (savedUser !== null) {
+          const parsedUser = JSON.parse(savedUser);
+          // Se tiver uma foto salva, usa ela, senão mantém a padrão
+          setUser(prev => ({
+            ...prev,
+            ...parsedUser,
+            photo: parsedUser.photo ? { uri: parsedUser.photo } : prev.photo
+          }));
+          setTempUser(prev => ({
+            ...prev,
+            ...parsedUser,
+            photo: parsedUser.photo ? { uri: parsedUser.photo } : prev.photo
+          }));
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+      }
+    };
+
+    loadUserData();
+  }, []);
+
   // Função para selecionar nova foto
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -23,14 +51,28 @@ const Perfil = ({ navigation }) => {
     });
 
     if (!result.canceled) {
-      const updatedUser = {...user, photo: { uri: result.assets[0].uri }};
+      const updatedUser = {
+        ...user, 
+        photo: { uri: result.assets[0].uri }
+      };
+      
       setUser(updatedUser);
       setTempUser(updatedUser);
+      
+      // Salva a URI da foto no AsyncStorage
+      try {
+        await AsyncStorage.setItem('@userData', JSON.stringify({
+          ...updatedUser,
+          photo: result.assets[0].uri // Salva apenas a string da URI
+        }));
+      } catch (error) {
+        console.error('Erro ao salvar foto:', error);
+      }
     }
   };
 
   // Função para salvar as alterações
-  const handleSave = () => {
+  const handleSave = async () => {
     // Validações básicas
     if (!tempUser.name.trim() || !tempUser.email.trim()) {
       Alert.alert('Erro', 'Nome e email são obrigatórios');
@@ -42,9 +84,26 @@ const Perfil = ({ navigation }) => {
       return;
     }
 
-    setUser(tempUser);
+    const updatedUser = {
+      ...tempUser,
+      // Mantém a URI da foto se existir, ou usa a foto padrão
+      photo: tempUser.photo?.uri ? { uri: tempUser.photo.uri } : user.photo
+    };
+
+    setUser(updatedUser);
     setIsEditing(false);
-    Alert.alert('Sucesso', 'Dados atualizados com sucesso!');
+    
+    // Salva todos os dados no AsyncStorage
+    try {
+      await AsyncStorage.setItem('@userData', JSON.stringify({
+        ...updatedUser,
+        photo: updatedUser.photo?.uri || null
+      }));
+      Alert.alert('Sucesso', 'Dados atualizados com sucesso!');
+    } catch (error) {
+      console.error('Erro ao salvar dados:', error);
+      Alert.alert('Erro', 'Ocorreu um erro ao salvar os dados');
+    }
   };
 
   // Função para cancelar edição

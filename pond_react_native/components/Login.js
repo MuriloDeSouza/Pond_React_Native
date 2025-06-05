@@ -28,8 +28,8 @@ const Login = ({ navigation, onLogin }) => {
     }
 
     // Credenciais padrão
-    const DEFAULT_EMAIL = 'mumu@gmail.com';
-    const DEFAULT_PASSWORD = '12345678';
+    const DEFAULT_EMAIL = 'mu@g.com';
+    const DEFAULT_PASSWORD = '123';
 
     // Verifica as credenciais
     if (email !== DEFAULT_EMAIL || password !== DEFAULT_PASSWORD) {

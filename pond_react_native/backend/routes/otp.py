@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 import os
 
 
-load_dotenv()  
+load_dotenv('/home/inteli/Documentos/GitHub/Pond_React_Native/pond_react_native/backend/routes/.env')  
 
 class EmailModel(BaseModel):
     email: str
