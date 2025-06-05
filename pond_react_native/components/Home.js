@@ -19,7 +19,8 @@ import * as ImagePicker from 'expo-image-picker';
 const PAGE_SIZE = 10;
 
 const Home = ({ navigation, route }) => {
-  const [products, setProducts] = useState([]);
+  const [apiProducts, setApiProducts] = useState([]); // Produtos da API
+  const [localProducts, setLocalProducts] = useState([]); // Produtos adicionados localmente
   const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [totalProducts, setTotalProducts] = useState(0);
@@ -33,6 +34,11 @@ const Home = ({ navigation, route }) => {
     description: 'Produto adicionado por mim'
   });
 
+  // Combina os produtos da API com os locais apenas na primeira página
+  const combinedProducts = currentPage === 0 
+    ? [...localProducts, ...apiProducts] 
+    : apiProducts;
+
   // Busca produtos da API
   const fetchProducts = async (page) => {
     setLoading(true);
@@ -41,7 +47,7 @@ const Home = ({ navigation, route }) => {
       const response = await fetch(`https://dummyjson.com/products?limit=${PAGE_SIZE}&skip=${skip}`);
       const data = await response.json();
       
-      setProducts(data.products);
+      setApiProducts(data.products);
       setTotalProducts(data.total);
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível carregar os produtos');
@@ -124,7 +130,7 @@ const Home = ({ navigation, route }) => {
     }
   };
 
-  // Adiciona novo produto
+  // Adiciona novo produto (alterado para usar setLocalProducts)
   const adicionarProduto = () => {
     if (!newProduct.name || !newProduct.price || !newProduct.image) {
       return Alert.alert('Erro', 'Preencha todos os campos');
@@ -139,7 +145,7 @@ const Home = ({ navigation, route }) => {
       thumbnail: newProduct.image
     };
 
-    setProducts([novoProduto, ...products]);
+    setLocalProducts([novoProduto, ...localProducts]);
     setNewProduct({
       image: null,
       name: '',
@@ -150,6 +156,7 @@ const Home = ({ navigation, route }) => {
     setIsModalVisible(false);
     Alert.alert('Sucesso', 'Produto adicionado com sucesso!');
   };
+
 
   // Renderiza cada produto
   const renderProduct = ({ item }) => (
@@ -163,7 +170,7 @@ const Home = ({ navigation, route }) => {
         defaultSource={require('../assets/logo.png')}
       />
       <Text style={styles.productName}>{item.title}</Text>
-      <Text style={styles.productPrice}>R$ {item.price.toFixed(2)}</Text>
+      <Text style={styles.productPrice}>R$ {item.price.toFixed(2).replace('.',',')}</Text>
       <Text style={styles.productBrand}>{item.brand}</Text>
       <Text style={styles.itemDescription} numberOfLines={2}>
         {item.description.length > 50 
@@ -184,7 +191,7 @@ const Home = ({ navigation, route }) => {
       ) : (
         <>
           <FlatList
-            data={products}
+            data={combinedProducts}  // Alterado para usar combinedProducts
             renderItem={renderProduct}
             keyExtractor={(item) => item.id.toString()}
             numColumns={2}
@@ -257,10 +264,14 @@ const Home = ({ navigation, route }) => {
             
             <TextInput
               style={styles.modalInput}
-              placeholder="Preço (ex: 19.99)"
+              placeholder="Preço (ex: 2,50)"
               keyboardType="numeric"
               value={newProduct.price}
-              onChangeText={(text) => setNewProduct({...newProduct, price: text})}
+              onChangeText={(text) => {
+                // Substitui vírgulas por pontos para armazenar corretamente
+                const formattedText = text.replace(',', '.');
+                setNewProduct({...newProduct, price: formattedText});
+              }}
             />
             
             <View style={styles.modalButtons}>
