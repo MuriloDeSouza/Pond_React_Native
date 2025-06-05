@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Header = ({ navigation }) => {
-  const [profilePhoto, setProfilePhoto] = useState(require('../assets/perfil_icon.png'));
+  const [profilePhoto, setProfilePhoto] = useState(require('../../assets/perfil_icon.png'));
 
   // Carrega a foto do perfil salva
   useEffect(() => {
