@@ -10,7 +10,7 @@ import LoginInput from '../components/Login/LoginInput';
 import LoginButton from '../components/Login/LoginButton';
 import LoginFooter from '../components/Login/LoginFooter';
 
-const Login = ({ navigation, onLogin }) => {
+const Login = ({ navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');

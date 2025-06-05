@@ -8,7 +8,7 @@ import Login from './telas/Login';
 import Cadastro from './telas/Cadastro';
 // import RecuperarSenha from './telas/RecuperarSenha';
 import Home from './telas/Home';
-// import Perfil from './telas/Perfil';
+import Perfil from './telas/Perfil';
 // import ProductDetail from './telas/ProductDetail';
 
 const Stack = createNativeStackNavigator();
@@ -39,9 +39,9 @@ export default function App() {
             }}
           />
           
-          {/* <Stack.Screen name="Perfil" component={Perfil} />
+          <Stack.Screen name="Perfil" component={Perfil} />
           
-          <Stack.Screen 
+          {/* <Stack.Screen 
             name="ProductDetail" 
             component={ProductDetail}
             options={{ 
