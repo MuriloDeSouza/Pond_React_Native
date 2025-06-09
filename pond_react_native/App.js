@@ -7,9 +7,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './telas/Login';
 import Cadastro from './telas/Cadastro';
 // import RecuperarSenha from './telas/RecuperarSenha';
+import RecuperarSenha from './components/RecuperarSenha';
 import Home from './telas/Home';
 import Perfil from './telas/Perfil';
 // import ProductDetail from './telas/ProductDetail';
+import ProductDetail from './components/Home/ProductDetail';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,7 +30,7 @@ export default function App() {
           {/* Telas de autenticação */}
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Cadastro" component={Cadastro} />
-          {/* <Stack.Screen name="RecuperarSenha" component={RecuperarSenha} /> */}
+          <Stack.Screen name="RecuperarSenha" component={RecuperarSenha} />
 
           {/* Telas principais do app */}
           <Stack.Screen 
@@ -41,7 +43,7 @@ export default function App() {
           
           <Stack.Screen name="Perfil" component={Perfil} />
           
-          {/* <Stack.Screen 
+          <Stack.Screen 
             name="ProductDetail" 
             component={ProductDetail}
             options={{ 
@@ -49,7 +51,7 @@ export default function App() {
               headerShown: true, // Mostra header apenas nesta tela
               headerBackTitle: 'Voltar' // Texto do botão de voltar (iOS)
             }}
-          /> */}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </View>
